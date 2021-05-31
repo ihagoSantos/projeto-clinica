@@ -1,0 +1,23 @@
+:root {
+    --primary-color: #110462;
+    --primary-color-dark: #080135;
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+.btn-primary{
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+.btn-primary:hover{
+    background-color: var(--primary-color-dark) !important;
+    border-color: var(--primary-color-dark) !important;
+}
+.container {
+    margin-top: 20px ;
+}
+.select2-container {
+    z-index: 100 !important;
+}
