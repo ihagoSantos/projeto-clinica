@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Atendimento;
+use App\Models\Procedimento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 class AtendimentoController extends Controller
@@ -20,6 +21,7 @@ class AtendimentoController extends Controller
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
+                "message" => "error when searching attendances",
                 'error' => $th
             ], 500);
         }
@@ -49,6 +51,7 @@ class AtendimentoController extends Controller
             // caso a validação falhe, retorna erro
             if($validator->fails()){
                 return response()->json([
+                    "message" => "error when registering attendance",
                     'errors' => $validator->errors()
                 ], 400);
             }else{
@@ -59,11 +62,12 @@ class AtendimentoController extends Controller
 
                 $atendimento->procedimentos()->createMany($request['procedimentos']);
                 return response()->json([
-                    'message' => 'service created successfully'
+                    'message' => 'attendance created successfully'
                 ], 200);
             }
         } catch (\Throwable $th) {
             return response()->json([
+                "message" => "error when registering attendance",
                 'errors' => $th
             ], 500);
         }
@@ -79,7 +83,7 @@ class AtendimentoController extends Controller
         $validator = Validator::make($request, [
             'profissional_id' => ['required','integer'],
             'paciente_id' => ['required','integer'],
-            'data_hora_atendimento' => ['required','date_format:Y-m-d H:i:s'],
+            'data_hora_atendimento' => ['required','date_format:Y-m-d H:i:s', 'after:today'],
             'procedimentos' => ['required','array'],
             'procedimentos.*.nome' => ['required','string'],
             'procedimentos.*.valor' => ['required','numeric'],
@@ -89,29 +93,30 @@ class AtendimentoController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Retorna um atendimento específico
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        //
+        try {
+            
+            return response()->json([
+                "data" => Atendimento::with(['profissional','paciente','procedimentos'])->find($id)
+            ], 200);
+        
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                "message" => "error when searching attendance",
+                "error" => $th
+            ], 500);
+        }
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Atualiza o atendimento informado
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
@@ -119,7 +124,42 @@ class AtendimentoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        try {
+            
+            $validator = $this->getValidator($request->all());
+            // caso a validação falhe, retorna erro
+            if($validator->fails()){
+                return response()->json([
+                    "message" => "error when registering attendance",
+                    'errors' => $validator->errors()
+                ], 400);
+            }else{
+
+                // atualiza dados do atendimento
+                $atendimento = Atendimento::with(['profissional','paciente','procedimentos'])->find($id);
+                $atendimento->profissional_id = $request['profissional_id'];
+                $atendimento->paciente_id = $request['paciente_id'];
+                $atendimento->data_hora_atendimento = $request['data_hora_atendimento'];
+                
+                // remove procedimentos cadastrados anteriormente
+                Procedimento::where('atendimento_id', $atendimento->id)->delete();
+                // cadastra novos procedimentos 
+                $atendimento->procedimentos()->createMany($request['procedimentos']);
+                // salva atendimento
+                $atendimento->save();
+                
+                return response()->json([
+                    'message' => 'attendance updated successfully'
+                ], 200);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                "message" => "error when registering attendance",
+                'errors' => $th
+            ], 500);
+        }
+
     }
 
     /**
