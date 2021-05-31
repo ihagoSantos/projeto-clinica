@@ -16,7 +16,7 @@ class CreateAtendimentoTable extends Migration
         Schema::create('atendimento', function (Blueprint $table) {
             $table->id();
             // valor do atendimento
-            $table->float('valor');
+            $table->float('valor')->default(0)->nulabble();
             // FK profissional
             $table->unsignedBigInteger('profissional_id');
             $table->foreign('profissional_id')->references('id')->on('profissional');
@@ -28,7 +28,7 @@ class CreateAtendimentoTable extends Migration
             $table->timestamp('data_hora_atendimento');
 
             // boolean que indica quando o atendimento foi finalizado
-            $table->boolean('finalizado');
+            $table->boolean('finalizado')->default(0);
             
             $table->timestamps();
         });

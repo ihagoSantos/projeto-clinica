@@ -15,6 +15,7 @@ class CreateProcedimentoTable extends Migration
     {
         Schema::create('procedimento', function (Blueprint $table) {
             $table->id();
+            $table->string('nome');
             $table->float('valor');
 
             // FK atendimento
