@@ -1,7 +1,7 @@
 ## Projeto
 
-### Modelo Entidade Relacionamento
-https://drive.google.com/file/d/1hf49M7t5_me_trVD5Vptudx5gFaJImiZ/view?usp=sharing
+### Documentação
+https://drive.google.com/drive/folders/1ZG-1Sw7n7ItBpMo-x0Jo0KcrJslrDNhj?usp=sharing
 
 ### Executar Projeto
 
