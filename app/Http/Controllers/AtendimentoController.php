@@ -46,7 +46,7 @@ class AtendimentoController extends Controller
     public function store(Request $request)
     {
         try {
-            
+            $request['data_hora_atendimento'] = date('Y-m-d H:i:s', strtotime($request['data_hora_atendimento']));
             $validator = $this->getValidator($request->all());
             // caso a validação falhe, retorna erro
             if($validator->fails()){
@@ -55,10 +55,14 @@ class AtendimentoController extends Controller
                     'errors' => $validator->errors()
                 ], 400);
             }else{
+                
 
-                $atendimento = Atendimento::create($request->only([
-                    'profissional_id','paciente_id','data_hora_atendimento'
-                ]));
+                $atendimento = Atendimento::create([
+                    'profissional_id'=>$request['profissional_id'],
+                    'paciente_id' => $request['paciente_id'],
+                    'data_hora_atendimento' => $request['data_hora_atendimento'],
+                    'valor' => $this->getValorTotalAtendimento($request['procedimentos'])
+                ]);
 
                 $atendimento->procedimentos()->createMany($request['procedimentos']);
                 return response()->json([
@@ -237,17 +241,24 @@ class AtendimentoController extends Controller
 
     /**
      * Retorna o valor total do atendimento com base no valor dos procedimentos
-     * @param float procedimentos
+     * @param array procedimentos
      * @return float valor
      */
     public function getValorTotalAtendimento($procedimentos){
         $valor = 0;
         foreach ($procedimentos as $key => $procedimento) {
-            $valor += $procedimento->valor;
+            if(is_array($procedimento)) $valor += $procedimento["valor"];
+            else $valor += $procedimento->valor;
+            
         }
         return $valor;
     }
-
+    /**
+     * Retorna o valor total da comissao do profissional
+     * @param float valorTotal
+     * @param float comissao
+     * @return float
+     */
     public function getComissaoProfissional($valorTotal, $comissao){
         return $valorTotal * $comissao;
     }

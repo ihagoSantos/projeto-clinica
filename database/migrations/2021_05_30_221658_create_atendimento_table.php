@@ -25,7 +25,7 @@ class CreateAtendimentoTable extends Migration
             $table->foreign('paciente_id')->references('id')->on('paciente');
 
             // data e hora do atendimento
-            $table->timestamp('data_hora_atendimento');
+            $table->dateTime('data_hora_atendimento');
 
             // boolean que indica quando o atendimento foi finalizado
             $table->boolean('finalizado')->default(0);
