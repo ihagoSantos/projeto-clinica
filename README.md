@@ -10,7 +10,7 @@ Após realizar o download do projeto, configure o arquivo .env com os dados nece
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=projeto-clinica
+DB_DATABASE=database_name
 DB_USERNAME=username
 DB_PASSWORD=password
 ```
