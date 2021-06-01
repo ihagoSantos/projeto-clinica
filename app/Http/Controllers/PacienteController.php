@@ -13,7 +13,16 @@ class PacienteController extends Controller
      */
     public function index()
     {
-        return Paciente::all();
+        try {
+            return response()->json([
+                'data' => Paciente::all()
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => $th
+            ], 500);
+        }
+        
     }
 
     /**

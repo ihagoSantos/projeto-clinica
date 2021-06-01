@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfissionalController;
 use App\Http\Controllers\PacienteController;
+use App\Http\Controllers\AtendimentoController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,3 +24,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::resource('/profissional', ProfissionalController::class);
 // Rotas para manipulação de pacientes (GET, POST, PUT e DELETE)
 Route::resource('/paciente', PacienteController::class);
+// Rotas para manipulação de atendimentos
+Route::resource('/atendimento', AtendimentoController::class);
+Route::put('/atendimento/finalizar/{id}', [AtendimentoController::class, 'finalizar_atendimento']);

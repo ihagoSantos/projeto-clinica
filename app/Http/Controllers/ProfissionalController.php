@@ -13,7 +13,15 @@ class ProfissionalController extends Controller
      */
     public function index()
     {
-        return Profissional::all();
+        try {
+            return response()->json([
+                'data' => Profissional::all()
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => $th
+            ], 500);
+        }
     }
 
     /**

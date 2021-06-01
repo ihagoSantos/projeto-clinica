@@ -12,4 +12,9 @@ class Paciente extends Model
     protected $table = 'paciente';
     // atributo
     protected $fillable = ['nome'];
+
+    // retorna o atendimento que possui o paciente
+    public function atendimento() {
+        return $this->belongsTo(Atendimento::class, 'paciente_id');
+    }
 }
