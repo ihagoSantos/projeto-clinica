@@ -11,6 +11,7 @@ class Atendimento extends Model
     use HasFactory;
     // habilita soft delete
     use SoftDeletes;
+    public $timestamps = false;
     // tabela
     protected $table = 'atendimento';
     // atributos
@@ -18,12 +19,12 @@ class Atendimento extends Model
 
     // retorna o profissional associado ao atendimento
     public function profissional() {
-        return $this->hasOne(Profissional::class, 'id');
+        return $this->hasOne(Profissional::class, 'id', 'profissional_id');
     }
 
     // retorna o paciente associado ao atendimento
     public function paciente() {
-        return $this->hasOne(Paciente::class, 'id');
+        return $this->hasOne(Paciente::class, 'id', 'paciente_id');
     }
     
     // retorna os procedimentos associados ao atendimento
