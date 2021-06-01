@@ -26,3 +26,4 @@ Route::resource('/profissional', ProfissionalController::class);
 Route::resource('/paciente', PacienteController::class);
 // Rotas para manipulação de atendimentos
 Route::resource('/atendimento', AtendimentoController::class);
+Route::put('/atendimento/finalizar/{id}', [AtendimentoController::class, 'finalizar_atendimento']);

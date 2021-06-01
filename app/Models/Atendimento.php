@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Atendimento extends Model
 {
     use HasFactory;
+    // habilita soft delete
+    use SoftDeletes;
     // tabela
     protected $table = 'atendimento';
     // atributos

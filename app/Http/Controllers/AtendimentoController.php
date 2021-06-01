@@ -163,13 +163,92 @@ class AtendimentoController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove atendimento com soft deletes
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        //
+        try {
+            $atendimento = Atendimento::find($id);
+            if(isset($atendimento)){
+                $atendimento->delete();
+                return response()->json([
+                    'message' => 'attendance deleted successfully'
+                ], 200);
+            }else{
+                return response()->json([
+                    "message" => "attendance not found"
+                ], 404);
+            }
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                "message" => "error when deleted attendance",
+                'errors' => $th
+            ], 500);
+        }
+    }
+
+    /**
+     * Finaliza o atendimento e salva o valor total dos procedimentos
+     * 
+     * @param int id
+     * @return \Illuminate\Http\Response
+     */
+    public function finalizar_atendimento($id){
+        try {
+            // busca o atendimento
+            $atendimento = Atendimento::with(['profissional','paciente','procedimentos'])->find($id);
+ 
+            if(isset($atendimento)){
+                // caso o atendimento já tenha sido finalizado, retorna mensagem
+                if($atendimento->finalizado){
+                    return response()->json([
+                        "message" => "attendance has already been finished"
+                    ]);
+                }else{// caso contrário, finaliza atendimento
+                    $valorTotalAtendimento = $this->getValorTotalAtendimento($atendimento->procedimentos);
+                    $comissaoProfissional = $this->getComissaoProfissional($valorTotalAtendimento, $atendimento->profissional->comissao);
+                    $atendimento->finalizado = 1;
+                    $atendimento->valor = $valorTotalAtendimento;
+                    $atendimento->save();
+
+                    $atendimento['totalComissao'] = $comissaoProfissional;
+                    return response()->json([
+                        'data' => $atendimento
+                    ], 200);
+
+                }
+                
+            }else{
+                return response()->json([
+                    "message" => "attendance not found"
+                ], 404);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                "message" => "error when ending attendance",
+                'errors' => $th
+            ], 500);
+        }
+    }
+
+    /**
+     * Retorna o valor total do atendimento com base no valor dos procedimentos
+     * @param float procedimentos
+     * @return float valor
+     */
+    public function getValorTotalAtendimento($procedimentos){
+        $valor = 0;
+        foreach ($procedimentos as $key => $procedimento) {
+            $valor += $procedimento->valor;
+        }
+        return $valor;
+    }
+
+    public function getComissaoProfissional($valorTotal, $comissao){
+        return $valorTotal * $comissao;
     }
 }
